@@ -380,7 +380,8 @@ public abstract class BaseTaskProcessor implements ITaskProcessor {
         DataSource datasource = processService.findDataSourceById(datasourceId);
         sqlTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
 
-        sqlTaskExecutionContext.setDefaultFS(HadoopUtils.getInstance().getDefaultFS());
+        //sqlTaskExecutionContext.setDefaultFS(HadoopUtils.getInstance().getDefaultFS());
+        sqlTaskExecutionContext.setDefaultFS("hdfs://zllx-prd-bigdata-app1:8020");
 
         // whether udf type
         boolean udfTypeFlag = Enums.getIfPresent(UdfType.class, Strings.nullToEmpty(sqlParameters.getType())).isPresent()
