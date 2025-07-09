@@ -66,7 +66,7 @@
         <hadoop.version>2.7.3</hadoop.version>
         <quartz.version>2.3.0</quartz.version>
         <jackson.version>2.10.5</jackson.version>
-        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <mybatis.spring.version>2.0.1</mybatis.spring.version>
         <cron.utils.version>9.1.3</cron.utils.version>
         <druid.version>1.2.4</druid.version>
@@ -217,6 +217,12 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <!-- repair safe problem -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>5.3.26</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -1112,6 +1118,31 @@
                     </instrumentation>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 目标输出目录为项目构建目录下的 lib -->
+                            <outputDirectory>C:\\dev\\code\\dolphinschedulerSJ\\lib</outputDirectory>
+                            <!-- 包含 compile 和 runtime 作用域的依赖 -->
+                            <includeScope>runtime</includeScope>
+                            <!-- 排除项目自身的 JAR -->
+                            <excludeArtifactIds>${project.artifactId}</excludeArtifactIds>
+                            <!-- 保留依赖版本信息 -->
+                            <stripVersion>false</stripVersion>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
     </build>
@@ -1149,20 +1180,20 @@
     </dependencies>
 
     <modules>
-        <module>dolphinscheduler-alert</module>
+<!--        <module>dolphinscheduler-alert</module>-->
         <module>dolphinscheduler-spi</module>
         <module>dolphinscheduler-registry</module>
         <module>dolphinscheduler-task-plugin</module>
-        <module>dolphinscheduler-ui</module>
+<!--        <module>dolphinscheduler-ui</module>-->
         <module>dolphinscheduler-server</module>
         <module>dolphinscheduler-common</module>
         <module>dolphinscheduler-api</module>
         <module>dolphinscheduler-dao</module>
-        <module>dolphinscheduler-dist</module>
-        <module>dolphinscheduler-remote</module>
+<!--        <module>dolphinscheduler-dist</module>-->
+<!--        <module>dolphinscheduler-remote</module>-->
         <module>dolphinscheduler-service</module>
-        <module>dolphinscheduler-standalone-server</module>
+<!--        <module>dolphinscheduler-standalone-server</module>-->
         <module>dolphinscheduler-datasource-plugin</module>
-        <module>dolphinscheduler-python</module>
+<!--        <module>dolphinscheduler-python</module>-->
     </modules>
 </project>

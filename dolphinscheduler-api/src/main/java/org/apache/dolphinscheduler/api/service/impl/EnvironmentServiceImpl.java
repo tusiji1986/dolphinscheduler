@@ -287,7 +287,7 @@ public class EnvironmentServiceImpl extends BaseServiceImpl implements Environme
             return result;
         }
 
-        Integer relatedTaskNumber = taskDefinitionMapper
+        Long relatedTaskNumber = taskDefinitionMapper
                 .selectCount(new QueryWrapper<TaskDefinition>().lambda().eq(TaskDefinition::getEnvironmentCode,code));
 
         if (relatedTaskNumber > 0) {

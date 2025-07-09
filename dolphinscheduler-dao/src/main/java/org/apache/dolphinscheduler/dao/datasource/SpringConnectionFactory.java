@@ -18,9 +18,10 @@
 package org.apache.dolphinscheduler.dao.datasource;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
-import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+//import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
@@ -37,12 +38,25 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+
 @Configuration
 public class SpringConnectionFactory {
 
+//    @Bean
+//    public PaginationInterceptor paginationInterceptor() {
+//        return new PaginationInterceptor();
+//    }
+
     @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        return new PaginationInterceptor();
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // add page plugin
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        // add other plugin
+        // interceptor.addInnerInterceptor(new TenantInnerInterceptor());
+        return interceptor;
     }
 
     @Bean
@@ -57,17 +71,22 @@ public class SpringConnectionFactory {
         configuration.setCacheEnabled(false);
         configuration.setCallSettersOnNulls(true);
         configuration.setJdbcTypeForNull(JdbcType.NULL);
-        configuration.addInterceptor(paginationInterceptor());
+        //configuration.addInterceptor(paginationInterceptor());
+        configuration.addInterceptor(mybatisPlusInterceptor());
 
-        configuration.setGlobalConfig(new GlobalConfig().setBanner(false));
+        // delete wrong code
+        //configuration.setGlobalConfig(new GlobalConfig().setBanner(false));
         MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setConfiguration(configuration);
         sqlSessionFactoryBean.setDataSource(dataSource);
+
 
         GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
         dbConfig.setIdType(IdType.AUTO);
         GlobalConfig globalConfig = new GlobalConfig();
         globalConfig.setDbConfig(dbConfig);
+        // replace configuration.setGlobalConfig(new GlobalConfig().setBanner(false));
+        globalConfig.setBanner(false);
         sqlSessionFactoryBean.setGlobalConfig(globalConfig);
         sqlSessionFactoryBean.setTypeAliasesPackage("org.apache.dolphinscheduler.dao.entity");
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
