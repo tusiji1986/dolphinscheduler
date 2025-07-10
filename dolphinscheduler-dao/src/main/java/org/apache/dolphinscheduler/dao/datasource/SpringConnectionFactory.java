@@ -52,10 +52,8 @@ public class SpringConnectionFactory {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // add page plugin
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
-        // add other plugin
-        // interceptor.addInnerInterceptor(new TenantInnerInterceptor());
+        PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor();
+        interceptor.addInnerInterceptor(paginationInterceptor);
         return interceptor;
     }
 
@@ -71,29 +69,30 @@ public class SpringConnectionFactory {
         configuration.setCacheEnabled(false);
         configuration.setCallSettersOnNulls(true);
         configuration.setJdbcTypeForNull(JdbcType.NULL);
-        //configuration.addInterceptor(paginationInterceptor());
-        configuration.addInterceptor(mybatisPlusInterceptor());
 
-        // delete wrong code
-        //configuration.setGlobalConfig(new GlobalConfig().setBanner(false));
         MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setConfiguration(configuration);
         sqlSessionFactoryBean.setDataSource(dataSource);
+        sqlSessionFactoryBean.setPlugins(mybatisPlusInterceptor());
+        sqlSessionFactoryBean.setGlobalConfig(globalConfig());
 
-
-        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
-        dbConfig.setIdType(IdType.AUTO);
-        GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setDbConfig(dbConfig);
-        // replace configuration.setGlobalConfig(new GlobalConfig().setBanner(false));
-        globalConfig.setBanner(false);
-        sqlSessionFactoryBean.setGlobalConfig(globalConfig);
         sqlSessionFactoryBean.setTypeAliasesPackage("org.apache.dolphinscheduler.dao.entity");
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sqlSessionFactoryBean.setMapperLocations(resolver.getResources("org/apache/dolphinscheduler/dao/mapper/*Mapper.xml"));
         sqlSessionFactoryBean.setTypeEnumsPackage("org.apache.dolphinscheduler.*.enums");
         sqlSessionFactoryBean.setDatabaseIdProvider(databaseIdProvider());
         return sqlSessionFactoryBean.getObject();
+    }
+
+    @Bean
+    public GlobalConfig globalConfig() {
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setBanner(false);
+        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
+        dbConfig.setIdType(IdType.AUTO);
+        globalConfig.setDbConfig(dbConfig);
+
+        return globalConfig;
     }
 
     @Bean
